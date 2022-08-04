@@ -1,5 +1,6 @@
 
 
+from cmath import inf
 import math
 import copy
 
@@ -119,38 +120,41 @@ def minimax(board):
     else:
         asshole = player(board)
         if asshole == X:
-            whatAction,optVal = max_value(board)
+            whatAction,optVal = max_value(inf,board)
             return whatAction
         else:
-            whatAction,optVal = min_value(board)
+            whatAction,optVal = min_value(-inf,board)
             return whatAction
 
-def max_value(board):
+def max_value(beta,board):
     if terminal(board):
         return None,utility(board)
+
     v = float('-inf')
     whatAction = None
+
     for action in actions(board):
-        act,val = min_value(result(copy.deepcopy(board),action))
+        act,val = min_value(alpha=v,board=result(copy.deepcopy(board),action))
+        if val > beta:
+            return action,val
         if val > v:
             v = val
             whatAction = action
-            if v == 1:
-                return whatAction,v
+
     return whatAction , v
 
-def min_value(board):
+def min_value(alpha,board):
     if terminal(board):
         return None,utility(board)
     v = float('inf')
     whatAction = None
     for action in actions(board):
-        act,val = max_value(result(copy.deepcopy(board),action))
+        act,val = max_value(beta=v,board=result(copy.deepcopy(board),action))
+        if val < alpha:
+            return action,val
         if val < v:
             v = val
             whatAction = action
-            if v == -1:
-                return whatAction,v
     return whatAction,v
 
 
